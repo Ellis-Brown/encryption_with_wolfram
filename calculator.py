@@ -1,3 +1,4 @@
+# File is Python3
 def fast_mod_exp(b, exp, m):
     return pow(b, exp, m)
 
@@ -9,15 +10,8 @@ def computeGCD(x, y):
 
 
 def findModInverse(a, m):
-    if computeGCD(a, m) != 1:
-        return None  # No mod inverse if a & m aren't relatively prime.
-    u1, u2, u3 = 1, 0, a
-    v1, v2, v3 = 0, 1, m
-    while v3 != 0:
-        q = u3 // v3
-        v1, v2, v3, u1, u2, u3 = (u1 - q * v1), (u2 - q * v2), (u3 - q * v3),
-        v1, v2, v3
-    return u1 % m
+    # python 3.8+
+    return pow(a, -1, m)
 
 # def FastModularExponentiation(b, k, m):
 #     return pow(b, pow(2, k), m)
@@ -39,41 +33,52 @@ class Diffie_Hellman_Key_Exchange:
     def __init__(self) -> None:
         pass
 
-    def get_pub_key(self, priv_key, shared_large_prime, shared_primitive_root):
+    def get_pub_key(priv_key, shared_large_prime, shared_primitive_root):
         public_key = fast_mod_exp(b=shared_primitive_root,
                                   exp=priv_key, m=shared_large_prime)
         return public_key
 
-    def get_shared_secret(self, priv_key, others_public_key, shared_large_prime):
+    def get_shared_secret(priv_key, others_public_key, shared_large_prime):
         shared_secret = fast_mod_exp(
             b=others_public_key, exp=priv_key, m=shared_large_prime)
         return shared_secret
 
-    def encrypt_message(self, shared_secret, message, shared_large_prime):
-        product = message, shared_secret
+    def encrypt_message(shared_secret, message, shared_large_prime):
+        message = EncodeString.encode_string(message)
+        product = message * shared_secret
         encrypted_message = fast_mod_exp(
             b=product, exp=1, m=shared_large_prime)
         return encrypted_message
 
-    def decrypt_message(self, shared_secret, encrypted_message, shared_large_prime):
+    def decrypt_message(shared_secret, encrypted_message, shared_large_prime):
         mod_inverse = findModInverse(a=shared_secret, m=shared_large_prime)
-        message = encrypted_message * mod_inverse
-        return message
+        message_value = encrypted_message * mod_inverse % shared_large_prime
+        message = EncodeString.decode_string(message_value)
+        return message, message_value
+
 
 class EncodeString:
 
     def __init__(self) -> None:
         pass
 
-    def encode_string(self, string: str) -> int:
+    def encode_string(string: str) -> int:
         value = 0
         exponent = 0
         base = 27
-        for char in string:
-            char_value = (ord(char) - ord('A') + 1) # A = 1, Z = 27
+        for char in string[::-1]:
+            char_value = (ord(char) - ord('A') + 1)  # A = 1, Z = 27
             value += char_value * pow(base, exponent)
             exponent += 1
         return value
+
+    def decode_string(value: int) -> str:
+        # Find the remainder of the value divided by 27
+        # Find the quotient of the value divided by 27
+        if value % 27 == 0:
+            return ""
+        else:
+            return EncodeString.decode_string(value // 27) + chr((value % 27) + ord('A') - 1)
 
 
 def Problem_1():
@@ -93,19 +98,36 @@ def Problem_1():
     bob_public_key = encrypt.get_pub_key(priv_key=bob_private_key,
                                          shared_large_prime=large_prime,
                                          shared_primitive_root=primitive_root)
-    
+
     print("1b: Bob's public key, which is sent to Alice to establish their shared secret key: ", bob_public_key)
     shared_secret = encrypt.get_shared_secret(
         priv_key=bob_private_key, others_public_key=alice_public_key, shared_large_prime=large_prime)
-    print("1b: Shared secret")
+    print("1b: Shared secret: ", shared_secret)
 
-    # 1c 
+    # 1c
     print("----------")
+    message = "NMTHY"  # yes, this is the message.
+    encrypted_message = encrypt.encrypt_message(shared_secret=shared_secret,
+                                                message=message, 
+                                                shared_large_prime=large_prime)
+    print("1c: Message value: ", EncodeString.encode_string(message))
+    print("1c: Encrypted message: ", encrypted_message)
 
+    # 1d
+    encrypted_message_2 = 8730216
+    print("----------")
+    message, message_value = encrypt.decrypt_message(
+        shared_secret=shared_secret, encrypted_message=encrypted_message_2, shared_large_prime=large_prime)
+    print("1d: Decrypted message: ", message)
+    print("1d: Decrypted message value: ", message_value)
 
 
 def main():
-    string_encoder = EncodeString
-    print(string_encoder.encode_string("HI"))
+    print("*********************")
+    print("\tProblem 1")
+    print("*********************")
+    Problem_1()
+    # print(EncodeString.decode_string(786))
+
 
 main()
