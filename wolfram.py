@@ -16,5 +16,12 @@ def get_exponent_mod_wolfram(base, exponent, mod):
 def factor_wolfram(number):
     query_string = f"factor {number}"
     res = client.query(query_string)
-    print(next(res.results).text)
-    return next(res.results).text
+    res = str(next(res.results).text)
+    # NOTE: this is the "×" char not "x"
+
+    index_of_x = res.index("×")
+    index_of_space = res.strip().index(" ")
+    num_1 = res[:index_of_x] 
+    num_2 = res[index_of_x + 1: index_of_space]
+
+    return int(num_1), int(num_2)

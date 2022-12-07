@@ -1,6 +1,6 @@
 # File is Python3
 
-from wolfram import get_exponent_mod_wolfram
+from wolfram import get_exponent_mod_wolfram, factor_wolfram
 
 
 use_wolfram_api = False
@@ -58,7 +58,7 @@ class RSA_Encryption:
     def decrypt_message(message_value, public_key, exponent, d):
         # M = C^d (mod n)
         decrypted_message = fast_mod_exp(message_value, d, public_key)
-        return decrypted_message
+        return decrypted_message, EncodeString.decode_string(decrypted_message)
 
 
 class Diffie_Hellman_Key_Exchange:
@@ -173,12 +173,25 @@ def Problem_2():
     print("----------")
     encrypted_message_2 = 163527889 
     d = rsa.generate_d(large_prime_p, large_prime_q, exponent)
-    decrypted_message = rsa.decrypt_message(message_value=encrypted_message_2, public_key=alice_public_key, exponent=exponent, d=d)
+    decrypted_message, _ = rsa.decrypt_message(message_value=encrypted_message_2, public_key=alice_public_key, exponent=exponent, d=d)
     print("2c: Decrypted message: ", decrypted_message)
     print("2c: Decrypted message value: ", EncodeString.decode_string(decrypted_message))
 
 def Problem_3():
-    pass
+    rsa = RSA_Encryption
+    alice_pub_key = 453619540697
+    large_prime_q, large_prime_p = factor_wolfram(alice_pub_key)
+    exponent = 184283032817 
+    encoded_message = 294695456230
+    d = rsa.generate_d(large_prime_p, large_prime_q, exponent)
+
+    decoded_message_value, decoded_message = rsa.decrypt_message(message_value=encoded_message, public_key=alice_pub_key, exponent=exponent, d=d)
+    
+    # 3a
+    print("----------")
+    print("3a: Decoded message: ", decoded_message)
+    print("3a: Decoded message value: ", decoded_message_value)
+    
 
 def main():
     print("*************************")
@@ -192,6 +205,12 @@ def main():
     print("\tProblem 2")
     print("*************************")
     Problem_2()
+
+    print("\n\n")
+    print("*************************")
+    print("\tProblem 3")
+    print("*************************")
+    Problem_3()
 
 
 
