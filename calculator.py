@@ -1,18 +1,19 @@
 # File is Python3
+# This program attempts to solve questions 1-3 on the homework
+# Ellis Brown
+# 12/7/2022
+# Tufts University, Math 63
 
 from wolfram import get_exponent_mod_wolfram, factor_wolfram
 
 
-use_wolfram_api = False
+use_wolfram_api = False # Change this to true if you need to use the Wolfram API
+                        # for the fast modular exponentiation function
 def fast_mod_exp(b, exp, m):
     if (use_wolfram_api):
         return get_exponent_mod_wolfram(b, exp, m)
     else:        
         return pow(b, exp, m)
-    
-
-
-
     
 
 
@@ -50,7 +51,6 @@ class RSA_Encryption:
             message_value = EncodeString.encode_string(message)
         else:
             message_value = message
-        print(message_value)
         encrypted_message = fast_mod_exp(message_value, exponent, public_key)
         
         return encrypted_message
@@ -84,7 +84,7 @@ class Diffie_Hellman_Key_Exchange:
 
     def decrypt_message(shared_secret, encrypted_message, shared_large_prime):
         mod_inverse = findModInverse(a=shared_secret, m=shared_large_prime)
-        message_value = encrypted_message * mod_inverse % shared_large_prime
+        message_value = (encrypted_message * mod_inverse) % shared_large_prime
         message = EncodeString.decode_string(message_value)
         return message, message_value
 
@@ -114,7 +114,7 @@ class EncodeString:
 
 
 def Problem_1():
-    large_prime = 14348909
+    large_prime = (27 ** 5) + 2
     primitive_root = 7691485
     alice_private_key = 919332
     encrypt = Diffie_Hellman_Key_Exchange
@@ -194,6 +194,7 @@ def Problem_3():
     
 
 def main():
+    tests()
     print("*************************")
     print("\tProblem 1")
     print("*************************")
@@ -213,5 +214,13 @@ def main():
     Problem_3()
 
 
+
+
+
+def tests():
+    # Decode string (786) -> "ABC"
+    assert EncodeString.decode_string(786) == "ABC"
+    # Encode string ("ABC") -> 786
+    assert EncodeString.encode_string("ABC") == 786
 
 main()
