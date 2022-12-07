@@ -1,6 +1,17 @@
 # File is Python3
+
+import get_exponent_mod_wolfram from wolfram
+
+
 def fast_mod_exp(b, exp, m):
-    return pow(b, exp, m)
+    if (exp < 10000000):
+        return pow(b, exp, m)
+    else:
+        return get_exponent_mod_wolfram(b, exp, m)
+
+
+
+    
 
 
 def computeGCD(x, y):
@@ -17,16 +28,39 @@ def findModInverse(a, m):
 #     return pow(b, pow(2, k), m)
 
 
-def RSA_Encryption(priv_key, shared_large_prime, shared_primitive_root):
-    pass
+class RSA_Encryption:
+
+    def generate_key_pair(large_prime_1, large_prime_2):
+        # To break this, factor the two numbers
+        public_key = large_prime_1 * large_prime_2
 
 
-def Encrypt_RSA_Message(priv_key, public_key, shared_large_prime, shared_primitive_root):
-    pass
+    def generate_d(large_prime_1, large_prime_2, exponent):
+        # D such that DE = 1 (mod (p-1)(q-1))
+        d = pow(exponent, -1, (large_prime_1 - 1) * (large_prime_2 - 1))
+        return d
 
 
-def Decrypt_RSA_Message(priv_key, public_key, other_public_key, shared_large_prime, shared_primitive_root, encrypted_message):
-    pass
+    def encrypt_message(message, public_key, exponent):
+        # C = M^e (mod n)
+        if type(message) == str:
+            message_value = EncodeString.encode_string(message)
+        else:
+            message_value = message
+        print(message_value)
+        # This line is taking a while. Wait for it
+        print("Encrypting message...")
+        encrypted_message = pow(message_value, exponent, public_key)
+        print("Message encrypted!")
+        
+        return encrypted_message
+
+    def decrypt_message(message_value, public_key, exponent, d):
+        # M = C^d (mod n)
+        print("Decrypting message...")
+        decrypted_message = pow(message_value, d, public_key)
+        print("Message decrypted!")
+        return decrypted_message
 
 
 class Diffie_Hellman_Key_Exchange:
@@ -121,13 +155,44 @@ def Problem_1():
     print("1d: Decrypted message: ", message)
     print("1d: Decrypted message value: ", message_value)
 
+def Problem_2():
+    rsa = RSA_Encryption
+    large_prime_p = 20359
+    large_prime_q = 10939
+    exponent = 119102437
+
+    # 2a 
+    alice_public_key = rsa.generate_key_pair(large_prime_p, large_prime_q)
+    print("2a: Alice's public key: ", alice_public_key)
+
+    # 2b
+    print("----------")
+    message_value = 12345 
+    encrypted_message = rsa.encrypt_message(message=message_value, public_key=alice_public_key, exponent=exponent)
+    print("2b: Encrypted message: ", encrypted_message)
+
+    # 2c
+    print("----------")
+    encrypted_message_2 = 163527889 
+    d = rsa.generate_d(large_prime_p, large_prime_q, exponent)
+    decrypted_message = rsa.decrypt_message(message_value=encrypted_message_2, public_key=alice_public_key, exponent=exponent, d=d)
+    print("2c: Decrypted message: ", decrypted_message)
+
+
 
 def main():
-    print("*********************")
+    print("*************************")
     print("\tProblem 1")
-    print("*********************")
+    print("*************************")
     Problem_1()
-    # print(EncodeString.decode_string(786))
+    
+    print("\n\n")
+
+    print("*************************")
+    print("\tProblem 2")
+    print("*************************")
+    Problem_2()
+
 
 
 main()
