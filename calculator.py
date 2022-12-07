@@ -4,6 +4,52 @@
 # 12/7/2022
 # Tufts University, Math 63
 
+'''
+RESULTS
+*************************
+        Problem 1
+*************************
+1a: Alice's public key:  11736345
+----------
+1b: Bob's public key, which is sent to Alice to establish their shared secret key:  638034
+1b: Shared secret:  4429413
+----------
+1c: Message value:  7710874
+1c: Encrypted message:  9188807
+----------
+1d: Decrypted message:  GXZC
+1d: Decrypted message value:  155982
+
+
+
+*************************
+        Problem 2
+*************************
+2a: Alice's public key:  222707101
+----------
+2b: Encrypted message:  219021391
+----------
+2c: Decrypted message:  154907092
+2c: Decrypted message value:  JUMBOS
+
+
+
+*************************
+        Problem 3
+*************************
+----------
+3a: Decoded message:  TURKEY
+3a: Decoded message value:  298500874
+
+
+
+*************************
+        Problem 4
+*************************
+The discrete log result is: 57
+See the code "discrete_log" function for explanation
+'''
+from math import sqrt, floor
 from wolfram import get_exponent_mod_wolfram, factor_wolfram
 
 
@@ -16,20 +62,32 @@ def fast_mod_exp(b, exp, m):
         return pow(b, exp, m)
     
 
-
+# Found online
 def computeGCD(x, y):
     while (y):
         x, y = y, x % y
     return abs(x)
 
-
+# Using builting python pow function
 def findModInverse(a, m):
     # python 3.8+
     return pow(a, -1, m)
 
-# def FastModularExponentiation(b, k, m):
-#     return pow(b, pow(2, k), m)
-
+# Coded by myself by hand
+def discrete_log(g, h, p):
+    n = floor(sqrt(p)) + 1
+    l1 = [pow(g, x, p) for x in range(1, n)]
+    l2 = []
+    for i in range(1, n):
+        l2.append(pow(g, -i * n, p) * h % p)
+    # l2 = [pow(h * pow(g, -x * n), 1, p) for x in range (1, n)]
+    # find a match in the lists
+    for i, value_l1 in enumerate(l1):
+        for j, value_l2 in enumerate(l2):
+            if value_l1 == value_l2:
+                logarithm = i + j * n
+                return logarithm
+    return -1
 
 class RSA_Encryption:
 
@@ -191,7 +249,10 @@ def Problem_3():
     print("----------")
     print("3a: Decoded message: ", decoded_message)
     print("3a: Decoded message value: ", decoded_message_value)
+
+def Problem_4():
     
+    print(discrete_log(2, 3, 101))
 
 def main():
     tests()
@@ -212,6 +273,12 @@ def main():
     print("\tProblem 3")
     print("*************************")
     Problem_3()
+
+    print("\n\n")
+    print("*************************")
+    print("\tProblem 4")
+    print("*************************")
+    Problem_4()
 
 
 
