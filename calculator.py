@@ -1,13 +1,15 @@
 # File is Python3
 
-import get_exponent_mod_wolfram from wolfram
+from wolfram import get_exponent_mod_wolfram
 
 
+use_wolfram_api = False
 def fast_mod_exp(b, exp, m):
-    if (exp < 10000000):
-        return pow(b, exp, m)
-    else:
+    if (use_wolfram_api):
         return get_exponent_mod_wolfram(b, exp, m)
+    else:        
+        return pow(b, exp, m)
+    
 
 
 
@@ -33,6 +35,7 @@ class RSA_Encryption:
     def generate_key_pair(large_prime_1, large_prime_2):
         # To break this, factor the two numbers
         public_key = large_prime_1 * large_prime_2
+        return public_key
 
 
     def generate_d(large_prime_1, large_prime_2, exponent):
@@ -48,18 +51,13 @@ class RSA_Encryption:
         else:
             message_value = message
         print(message_value)
-        # This line is taking a while. Wait for it
-        print("Encrypting message...")
-        encrypted_message = pow(message_value, exponent, public_key)
-        print("Message encrypted!")
+        encrypted_message = fast_mod_exp(message_value, exponent, public_key)
         
         return encrypted_message
 
     def decrypt_message(message_value, public_key, exponent, d):
         # M = C^d (mod n)
-        print("Decrypting message...")
-        decrypted_message = pow(message_value, d, public_key)
-        print("Message decrypted!")
+        decrypted_message = fast_mod_exp(message_value, d, public_key)
         return decrypted_message
 
 
@@ -177,8 +175,10 @@ def Problem_2():
     d = rsa.generate_d(large_prime_p, large_prime_q, exponent)
     decrypted_message = rsa.decrypt_message(message_value=encrypted_message_2, public_key=alice_public_key, exponent=exponent, d=d)
     print("2c: Decrypted message: ", decrypted_message)
+    print("2c: Decrypted message value: ", EncodeString.decode_string(decrypted_message))
 
-
+def Problem_3():
+    pass
 
 def main():
     print("*************************")
