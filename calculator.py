@@ -4,10 +4,9 @@
 # Ellis Brown
 # 12/7/2022
 # Tufts University, Math 63
-
+# https://github.com/Ellis-Brown/encryption_with_wolfram 
 
 '''
-RESULTS
 *************************
         Problem 1
 *************************
@@ -48,7 +47,7 @@ RESULTS
 *************************
         Problem 4
 *************************
-The discrete log result is: 57
+69
 See the code "discrete_log" function for explanation
 '''
 
@@ -106,9 +105,9 @@ def findModInverse(a, m):
 # Coded by myself by hand
 def discrete_log(g, h, p):
     n = floor(sqrt(p)) + 1
-    l1 = [pow(g, x, p) for x in range(1, n)]
+    l1 = [pow(g, x, p) for x in range(n)]
     l2 = []
-    for i in range(1, n):
+    for i in range(n):
         l2.append(pow(g, -i * n, p) * h % p)
     # l2 = [pow(h * pow(g, -x * n), 1, p) for x in range (1, n)]
     # find a match in the lists
